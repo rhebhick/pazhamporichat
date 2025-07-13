@@ -1,4 +1,4 @@
-# Pazhapori Chat ⚡️
+# Pazhampori Chat ⚡️
 website link:https://pazhamporichat.vercel.app
 
 Your friendly neighborhood AI roasting companion from Kerala. Pazhapori Chat is an arrogant, impatient, and witty web-based AI chatbot that communicates exclusively in authentic Manglish. It thinks your questions are probably a waste of its time, but it will answer them anyway... after a bit of roasting.
