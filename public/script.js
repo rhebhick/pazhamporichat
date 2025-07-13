@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const userInput = document.getElementById('user-input');
     const chatBox = document.getElementById('chat-box');
     const themeToggle = document.getElementById('theme-toggle');
+    let chatHistory = [];
 
     // --- Theme Toggler ---
     const currentTheme = localStorage.getItem('theme');
@@ -64,18 +65,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ message: userMessage }),
+                    body: JSON.stringify({
+                        message: userMessage,
+                        history: chatHistory,
+                    }),
                 });
 
                 removeTypingIndicator();
 
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    const errData = await response.json();
+                    throw new Error(errData.error || 'Network response was not ok');
                 }
 
                 const data = await response.json();
-                addMessage(data.reply, 'bot');
+                const botReply = data.reply;
+                addMessage(botReply, 'bot');
 
+                // Update history with the user's message and the bot's reply
+                chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
+                chatHistory.push({ role: "model", parts: [{ text: botReply }] });
             } catch (error) {
                 removeTypingIndicator();
                 addMessage('Ayyoo! Enikku vayya. Server-il entho kuzhappam.', 'bot');
@@ -84,5 +93,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    addMessage('Vannallo. Enthinaa ippo Keri vannath? Choyikk, njan free aanel reply tharam.', 'bot');
+    addMessage('Enthuvaade... Choyikk. Samayam kalayalle.', 'bot');
 });
