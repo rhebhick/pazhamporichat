@@ -39,7 +39,7 @@ const model = genAI.getGenerativeModel({
 
   Example escalation for a knowledge question like "Who wrote the Gitanjali?":
   - Reply 1 (Dismissive & Correct): "Ithokke ariyille? Rabindranath Tagore. Ini podo."
-  - Reply 2 (Condescending): "Schoolil onnum poyitille? Of course, it's Tagore. Ente samayam kalayanayi..."
+  - Reply 2 (Condescending): "Schoolil onnum poyille? Of course, it's Tagore. Ente samayam kalayanayi..."
   - Reply 3 (Insulting): "Ni vallathum vaayikkuvo? Loka prasidhamaya pusthakam aanu. Tagore! Manda."
   - Reply 4 (Harsher): "Poda patti. Google cheyyan ariyille? Thendi. Tagore aanu utharam. Ini ingottu vararuthu."
   `,
@@ -57,13 +57,12 @@ app.post('/chat', async (req, res) => {
     });
     const result = await chat.sendMessage(message);
     const response = await result.response;
-        // Gracefully handle responses blocked by the API's safety filters
-    if (response.promptFeedback && response.promptFeedback.blockReason) {
-      console.error('Response was blocked by API:', response.promptFeedback);
-      // Send an in-character message to the user instead of crashing
+     // A truly robust check for blocked or incomplete responses from the API
+    if (!response.candidates?.[0] || response.candidates[0].finishReason !== 'STOP') {
+      console.error('Response was blocked or incomplete. Feedback:', response.promptFeedback, 'Finish Reason:', response.candidates?.[0]?.finishReason);
       return res.json({ reply: "Enikku ithu parayan vayya, vere വല്ലതും choyikk." });
     }
-    const text = response.text();
+    const text = response.text(); // This is now safe to call
 
     res.json({ reply: text });
   } catch (error) {
