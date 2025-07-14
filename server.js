@@ -57,6 +57,12 @@ app.post('/chat', async (req, res) => {
     });
     const result = await chat.sendMessage(message);
     const response = await result.response;
+        // Gracefully handle responses blocked by the API's safety filters
+    if (response.promptFeedback && response.promptFeedback.blockReason) {
+      console.error('Response was blocked by API:', response.promptFeedback);
+      // Send an in-character message to the user instead of crashing
+      return res.json({ reply: "Enikku ithu parayan vayya, vere വല്ലതും choyikk." });
+    }
     const text = response.text();
 
     res.json({ reply: text });
